@@ -3,17 +3,15 @@ def print_board(board):
         print(" ".join("Q" if col else "." for col in row))
     print("\n")
 
+# ---------------- BACKTRACKING VERSION ----------------
 def is_safe(board, row, col, n):
-    # Check the current column
     for i in range(row):
         if board[i][col]:
             return False
-    # Check upper left diagonal
-    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+    for i, j in zip(range(row - 1, -1, -1), range(col - 1, -1, -1)):
         if board[i][j]:
             return False
-    # Check upper right diagonal
-    for i, j in zip(range(row, -1, -1), range(col, n)):
+    for i, j in zip(range(row - 1, -1, -1), range(col + 1, n)):
         if board[i][j]:
             return False
     return True
@@ -34,10 +32,9 @@ def solve_n_queens_backtracking(board, row, n):
 def n_queens_backtracking(n):
     board = [[False] * n for _ in range(n)]
     if not solve_n_queens_backtracking(board, 0, n):
-        print("No solution exists.")
+        print("No solution exists (Backtracking).")
 
-# ---------- Branch and Bound version ----------
-
+# ---------------- BRANCH AND BOUND VERSION ----------------
 def is_safe_branch_and_bound(row, col, cols, diags1, diags2, n):
     return not (cols[col] or diags1[row + col] or diags2[row - col + (n - 1)])
 
@@ -50,16 +47,12 @@ def solve_n_queens_branch_and_bound(row, n, cols, diags1, diags2, board):
     for col in range(n):
         if is_safe_branch_and_bound(row, col, cols, diags1, diags2, n):
             board[row][col] = True
-            cols[col] = True
-            diags1[row + col] = True
-            diags2[row - col + (n - 1)] = True
+            cols[col] = diags1[row + col] = diags2[row - col + (n - 1)] = True
 
             found_solution = solve_n_queens_branch_and_bound(row + 1, n, cols, diags1, diags2, board) or found_solution
 
             board[row][col] = False
-            cols[col] = False
-            diags1[row + col] = False
-            diags2[row - col + (n - 1)] = False
+            cols[col] = diags1[row + col] = diags2[row - col + (n - 1)] = False
     return found_solution
 
 def n_queens_branch_and_bound(n):
@@ -68,26 +61,11 @@ def n_queens_branch_and_bound(n):
     diags1 = [False] * (2 * n - 1)
     diags2 = [False] * (2 * n - 1)
     if not solve_n_queens_branch_and_bound(0, n, cols, diags1, diags2, board):
-        print("No solution exists.")
+        print("No solution exists (Branch and Bound).")
 
-
-
-
-
-
-
-
-
-
------------------X----------ON NEXT CELL-------X--------------------------
-
-print("Backtracking Solution for N=4:")
+# ---------------- EXECUTION ----------------
+print("Backtracking Solution(s):")
 n_queens_backtracking(4)
 
-print("Branch and Bound Solution for N=4:")
+print("Branch and Bound Solution(s):")
 n_queens_branch_and_bound(4)
-
-
-
-
-
